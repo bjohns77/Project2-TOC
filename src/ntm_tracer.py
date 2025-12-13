@@ -37,7 +37,7 @@ class NTM_Tracer(TuringMachineSimulator):
             all_rejected = True
 
             # 1. Iterate through every config in current_level.
-            for config in current_level:
+            for index, config in enumerate(current_level):
                 state = ""
                 # 2. Check if config is Accept (Stop and print success) [cite: 179]
                 for item in config:
@@ -55,25 +55,28 @@ class NTM_Tracer(TuringMachineSimulator):
                 if state in trans:
                     past = config[0]
                     next = config[2]
-                    if len(config[2])==0: next_input = '_'
+                    if len(config[2])==0: next_input = ''
                     else: next_input = config[2][0] #look at next input
                     s_transitions = trans[state]
-                    for index, t in enumerate(s_transitions):
+                    for t in s_transitions:
+                       
                         if next_input in t['read']:
+                             # moving right
                             if t['move'][0] == 'R':
                                 new_left = past + t['write'][0]
-                                if not next:
+                                if not next[1:]:
                                     new_right = '_'
                                 else:
                                     new_right = next[1:]
                                 next_level.append([new_left, t['next'], new_right, [index, depth], t]) #Generate children configurations and append to next_level[cite: 148].
+                            #moving left
                             elif t['move'][0] =='L':
                                 if not past:
                                     new_left = ''
-                                    new_right = t['write'][0] + next
+                                    new_right = '_'+ t['write'][0] + next
                                 else:
                                     new_left = past[:-1]
-                                    new_right = past[-1] + t['write'][0] + next
+                                    new_right = past[-1] + t['write'][0] + next[:1]
                                 next_level.append([new_left, t['next'], new_right, [index, depth], t]) #Generate children configurations and append to next_level[cite: 148].
                 else: break # no transisiton off of the state so treat as reject 
 
@@ -113,8 +116,9 @@ class NTM_Tracer(TuringMachineSimulator):
             'w_right': curr_node[2], # Element 2: w_right
             })
             #print(path)
-
+            #print(curr_node[-1])
             curr_node = tree[tree_index][depth_index]
+            
         
         #add root node:
         path.append({
