@@ -80,7 +80,7 @@ class NTM_Tracer(TuringMachineSimulator):
 
             # Placeholder for logic:
             # need to record maximum depth of rejected state:
-            deepest = depth
+            deepest = depth+1
             if not next_level and all_rejected:
                 # Handle "String rejected" output [cite: 258]
                 print("String Rejected!")
